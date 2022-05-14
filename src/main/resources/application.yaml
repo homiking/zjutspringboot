@@ -9,9 +9,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://118.31.251.4:3306/zjut?characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
-    password: Huan1997.
+    url: jdbc:mysql://localhost:3306/zjut?characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: username
+    password: password
     type: com.alibaba.druid.pool.DruidDataSource
   mvc:
     static-path-pattern: /static/**
