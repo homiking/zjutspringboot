@@ -2,10 +2,11 @@ server:
   port: 9200
 spring:
   redis:
-    database: 0
-    host: 127.0.0.1
+    database: 10
+    host: 118.31.251.4
     port: 6379
     password: # 如果未单独配置默认为空即可
+    
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,3 +19,8 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     cache: false
+  cache:
+    type: redis
+logging:
+  level:
+    com.zhm.drug.mapper: debug

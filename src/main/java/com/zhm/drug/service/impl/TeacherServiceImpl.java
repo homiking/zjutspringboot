@@ -8,6 +8,9 @@ import com.zhm.drug.entity.Teacher;
 import com.zhm.drug.mapper.TeacherMapper;
 import com.zhm.drug.service.ITeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
@@ -19,10 +22,11 @@ import java.util.List;
  * @Date 2022/4/10
  **/
 @Service
+@CacheConfig(cacheNames = "teacher")
 public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> implements ITeacherService {
     @Autowired
     TeacherMapper teacherMapper;
-
+    @Cacheable(key="'teacherpage'")
     @Override
     public IPage<Teacher> selectTeacherPage(int pageNum, int pageSize, String param) {
         QueryWrapper<Teacher> wrapper = new QueryWrapper<>();
@@ -33,22 +37,25 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         Page<Teacher> page = new Page<>(pageNum, pageSize);
         return teacherMapper.selectPage(page, wrapper);
     }
-
+    @CacheEvict(key="'teacherpage'")
     @Override
     public int addTeacher(Teacher teacher) {
         return teacherMapper.insert(teacher);
     }
 
+    @CacheEvict(key="'teacherpage'")
     @Override
     public int editTeacher(Teacher teacher) {
         return teacherMapper.updateById(teacher);
     }
 
+    @CacheEvict(key="'teacherpage'")
     @Override
     public Teacher queryTeacherById(int id) {
         return teacherMapper.selectById(id);
     }
 
+    @CacheEvict(key="'teacherpage'")
     @Override
     public int delTeacherById(int id) {
         return teacherMapper.deleteById(id);

@@ -8,6 +8,9 @@ import com.zhm.drug.entity.Book;
 import com.zhm.drug.mapper.BookMapper;
 import com.zhm.drug.service.IBookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
@@ -18,11 +21,14 @@ import java.util.List;
  * @Author kknever
  * @Date 2022/4/10
  **/
+@CacheConfig(cacheNames = "book")
 @Service
 public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IBookService {
+
     @Autowired
     BookMapper bookMapper;
 
+    @Cacheable(key="'bookpage'")
     @Override
     public IPage<Book> selectBookPage(int pageNum, int pageSize, String param) {
         QueryWrapper<Book> wrapper = new QueryWrapper<>();
@@ -33,12 +39,12 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IB
         Page<Book> page = new Page<>(pageNum, pageSize);
         return bookMapper.selectPage(page, wrapper);
     }
-
+    @CacheEvict(key="'bookpage'")
     @Override
     public int addBook(Book book) {
         return bookMapper.insert(book);
     }
-
+    @CacheEvict(key="'bookpage'")
     @Override
     public int editBook(Book book) {
         return bookMapper.updateById(book);
@@ -47,8 +53,9 @@ public class BookServiceImpl extends ServiceImpl<BookMapper, Book> implements IB
     @Override
     public Book queryBookById(int id) {
         return bookMapper.selectById(id);
-    }
 
+    }
+    @CacheEvict(key="'bookpage'")
     @Override
     public int delBookById(int id) {
         return bookMapper.deleteById(id);

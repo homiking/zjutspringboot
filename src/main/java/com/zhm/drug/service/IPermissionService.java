@@ -2,7 +2,8 @@ package com.zhm.drug.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zhm.drug.entity.*;
+import com.zhm.drug.entity.Permission;
+import com.zhm.drug.entity.RolePermission;
 
 import java.util.List;
 

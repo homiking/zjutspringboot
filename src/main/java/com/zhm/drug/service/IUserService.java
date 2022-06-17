@@ -1,9 +1,8 @@
 package com.zhm.drug.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.zhm.drug.entity.Supplier;
 import com.zhm.drug.entity.User;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
@@ -41,7 +40,13 @@ public interface IUserService extends IService<User> {
      */
     public int editUser(User user);
 
-    public User selectById(Integer id);
+    public Object selectById(Integer id);
 
     void  updatePass(Map<String, Object> map);
+
+    /**
+     * 查找用户列表
+     * @return
+     */
+    IPage<User> selectUserPage(int pageNum, int pageSize, String param);
 }

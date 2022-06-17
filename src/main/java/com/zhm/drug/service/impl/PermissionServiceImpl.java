@@ -4,11 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zhm.drug.entity.*;
+import com.zhm.drug.entity.Permission;
+import com.zhm.drug.entity.RolePermission;
 import com.zhm.drug.mapper.PermissionMapper;
-import com.zhm.drug.mapper.RoleMapper;
 import com.zhm.drug.service.IPermissionService;
-import com.zhm.drug.service.IRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
@@ -20,6 +19,7 @@ import java.util.List;
  * @Author kknever
  * @Date 2022/4/10
  **/
+
 @Service
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements IPermissionService {
     @Autowired

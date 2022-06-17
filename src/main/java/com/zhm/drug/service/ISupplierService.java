@@ -3,7 +3,6 @@ package com.zhm.drug.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhm.drug.entity.Supplier;
-import com.zhm.drug.entity.User;
 
 import java.util.List;
 

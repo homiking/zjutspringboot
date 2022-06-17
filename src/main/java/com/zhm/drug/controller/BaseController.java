@@ -25,6 +25,6 @@ public class BaseController {
         String token = request.getHeader("token");
         String aud = JWT.decode(token).getAudience().get(0);
         Integer userId = Integer.valueOf(aud);
-        return userService.selectById(userId);
+        return (User) userService.selectById(userId);
     }
 }

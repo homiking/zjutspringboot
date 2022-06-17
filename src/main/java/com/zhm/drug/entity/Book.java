@@ -26,6 +26,7 @@ public class Book {
     private BigDecimal price;
     private String author;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @TableField(value="createtime")
     private Date createTime;
     private String cover;
     private String userId;

@@ -37,5 +37,5 @@ public class User implements Serializable {
     private String token;
 
     @TableField(exist = false)
-    private Set<Permission> permissions;
+        private Set<Permission> permissions;
 }

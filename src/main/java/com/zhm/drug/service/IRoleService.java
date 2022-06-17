@@ -3,11 +3,9 @@ package com.zhm.drug.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhm.drug.entity.Role;
-import com.zhm.drug.entity.Role;
 import com.zhm.drug.entity.UserRole;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description
@@ -56,4 +54,14 @@ public interface IRoleService extends IService<Role> {
      * @return
      */
     public int delRoleById(int id);
+
+    /**
+     * 查询全部角色
+     * @return
+     */
+    List<Role> selectList();
+
+    int deleteRoleByUserId(Integer userId);
+
+    int insertUserAndRole(Integer userId, Integer roleId);
 }

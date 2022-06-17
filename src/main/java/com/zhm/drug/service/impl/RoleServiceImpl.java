@@ -5,19 +5,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zhm.drug.entity.Role;
-import com.zhm.drug.entity.Role;
-import com.zhm.drug.entity.User;
 import com.zhm.drug.entity.UserRole;
 import com.zhm.drug.mapper.RoleMapper;
-import com.zhm.drug.mapper.UserMapper;
 import com.zhm.drug.service.IRoleService;
-import com.zhm.drug.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Description
@@ -62,5 +57,20 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     @Override
     public int delRoleById(int id) {
         return roleMapper.deleteById(id);
+    }
+
+    @Override
+    public List<Role> selectList() {
+        return roleMapper.selectList(null);
+    }
+
+    @Override
+    public int deleteRoleByUserId(Integer userId) {
+        return roleMapper.deleteRolesByUserId(userId);
+    }
+
+    @Override
+    public int insertUserAndRole(Integer userId, Integer roleId) {
+        return roleMapper.insertUserAndRole(userId, roleId);
     }
 }

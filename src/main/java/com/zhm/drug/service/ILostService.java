@@ -3,6 +3,7 @@ package com.zhm.drug.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.zhm.drug.entity.Lost;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 

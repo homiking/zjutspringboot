@@ -1,7 +1,11 @@
 package com.zhm.drug.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.zhm.drug.common.Result;
-import com.zhm.drug.entity.*;
+import com.zhm.drug.entity.Permission;
+import com.zhm.drug.entity.RolePermission;
+import com.zhm.drug.entity.User;
+import com.zhm.drug.entity.UserRole;
 import com.zhm.drug.enums.RoleEnum;
 import com.zhm.drug.service.IPermissionService;
 import com.zhm.drug.service.IRoleService;
@@ -13,13 +17,22 @@ import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.hash.SimpleHash;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 /**
@@ -27,9 +40,12 @@ import java.util.stream.Collectors;
  * @Author kknever
  * @Date 2022/4/10
  **/
+@CacheConfig(cacheNames = "userrole")
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+
     @Autowired
     IUserService userService;
 
@@ -54,6 +70,7 @@ public class UserController {
     public Result<?> login(@RequestBody User user) {
         String username = user.getUsername();
         String password = user.getPassword();
+        password = new SimpleHash("md5",password,null,1024).toString();
         if(username == null || password == null) {
             return Result.error("203","用户名和密码不能为空");
         }
@@ -68,12 +85,8 @@ public class UserController {
             return Result.error("203","密码不正确");
         }
 
-        //session.setAttribute("username", username);
         User res = userService.findUser(username);
-        if (res == null) {
-            return Result.error("-1", "用户名或密码错误");
-        }
-        //res.setPassword(null);
+        res.setPassword(null);
         HashSet<Permission> permissionSet = new HashSet<>();
         // 1. 从user_role表通过用户id查询所有的角色信息
         Integer userId = res.getId();
@@ -142,14 +155,26 @@ public class UserController {
     }
     @GetMapping("/{id}")
     public Result<?> getById(@PathVariable Integer id) {
-        return Result.success(userService.selectById(id));
+        Object user = userService.selectById(id);
+        if(user == null) {
+            return Result.error("400", "该用户不存在");
+        } else {
+            return Result.success(user);
+        }
     }
-
+    @GetMapping("/redis/{id}")
+    public Object redisGetById(@PathVariable("id") Integer id) {
+        ExecutorService es = Executors.newFixedThreadPool(200);
+        for (int i = 0; i < 50; i++) {
+            es.submit(() -> userService.selectById(id));
+        }
+        return userService.selectById(id);
+    }
 
     @PutMapping("/pass")
     public Result<?> pass(@RequestBody Map<String, Object> map) {
         BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
-        User user = userService.selectById((Integer) map.get("userId"));
+        User user = (User)userService.selectById((Integer) map.get("userId"));
         if (user== null) {
             return Result.error("-1", "未找到用户");
         }
@@ -162,5 +187,35 @@ public class UserController {
         //map.put("newPass", (bc.encode(map.get("newPass").toString())));
         userService.updatePass(map);
         return Result.success();
+    }
+
+    @Cacheable(key="'userpage'")
+    @GetMapping("/queryUserRole")
+    public Result<?> queryUserRole(String search, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "10") int pageSize ){
+        try{
+            IPage<User> ipage = userService.selectUserPage(pageNum, pageSize, search);
+            List<User> records = ipage.getRecords();
+            // 给用户设置绑定的角色id数组
+            for (User record : records) {
+                Integer userId = record.getId();
+                List<Integer> roles = roleService.getUserRoleByUserId(userId).stream().map(UserRole::getRoleId).collect(Collectors.toList());
+                record.setRoles(roles);
+            }
+            return Result.success(ipage);
+        } catch (Exception e) {
+            return Result.error("404", "查询不到数据");
+        }
+
+    }
+    @CacheEvict(key="'userpage'")
+    @PutMapping("/changeRole")
+    public Result<?> changePermission(@RequestBody User user, HttpServletRequest request) {
+        // 先根据用户id删除所有的用户和角色的绑定关系
+        roleService.deleteRoleByUserId(user.getId());
+        // 再新增 新的绑定关系
+        for (Integer roleId : user.getRoles()) {
+            roleService.insertUserAndRole(user.getId(), roleId);
+        }
+        return Result.success(false);
     }
 }

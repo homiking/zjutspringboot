@@ -8,6 +8,9 @@ import com.zhm.drug.entity.News;
 import com.zhm.drug.mapper.NewsMapper;
 import com.zhm.drug.service.INewsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
 
@@ -18,11 +21,13 @@ import java.util.List;
  * @Author kknever
  * @Date 2022/4/10
  **/
+@CacheConfig(cacheNames = "news")
 @Service
 public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements INewsService {
     @Autowired
     NewsMapper newsMapper;
 
+    @Cacheable(key="'newspage'")
     @Override
     public IPage<News> selectNewsPage(int pageNum, int pageSize, String param) {
         QueryWrapper<News> wrapper = new QueryWrapper<>();
@@ -33,12 +38,13 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements IN
         Page<News> page = new Page<>(pageNum, pageSize);
         return newsMapper.selectPage(page, wrapper);
     }
-
+    @CacheEvict(key="'newspage'")
     @Override
     public int addNews(News news) {
         return newsMapper.insert(news);
     }
 
+    @CacheEvict(key="'newspage'")
     @Override
     public int editNews(News news) {
         return newsMapper.updateById(news);
@@ -49,6 +55,7 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements IN
         return newsMapper.selectById(id);
     }
 
+    @CacheEvict(key="'newspage'")
     @Override
     public int delNewsById(int id) {
         return newsMapper.deleteById(id);

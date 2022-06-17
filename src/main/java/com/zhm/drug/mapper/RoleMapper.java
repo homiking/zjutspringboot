@@ -20,4 +20,10 @@ public interface RoleMapper extends BaseMapper<Role> {
 
     @Insert("insert into user_role(user_id, role_id) values(#{userId}, #{roleId})")
     void insertUserRole(Integer userId, Integer roleId);
+
+    @Delete("delete from user_role where user_id = #{userId}")
+    int deleteRolesByUserId(Integer userId);
+
+    @Insert("insert into user_role(user_id, role_id) values(#{userId}, #{roleId})")
+    int insertUserAndRole(Integer userId, Integer roleId);
 }
