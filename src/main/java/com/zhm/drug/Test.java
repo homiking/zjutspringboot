@@ -17,13 +17,6 @@ import java.util.function.Function;
  **/
 public class Test {
     public static void main(String[] args) {
-        StringBuffer buffer = new StringBuffer();
-        int value = 18;
-        do{
-            int temp = value&0x07;
-            buffer.append(temp);
-        } while((value >>>= 3)!=0);
-        System.out.println(buffer.reverse());
+        System.out.println(1);
     }
-
 }
